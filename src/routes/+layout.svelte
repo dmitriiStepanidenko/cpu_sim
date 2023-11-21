@@ -1,7 +1,5 @@
 <script>
-  import '../app.css'
 	import Toaster from '$lib/Toaster.svelte';
-	import './styles.css';
 </script>
 
 <Toaster />
