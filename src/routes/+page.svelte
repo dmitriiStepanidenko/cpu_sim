@@ -52,7 +52,7 @@
 </script>
 
 <div>
-	<div class="row">
+	<div class="row_buttons">
 		<button on:click={handlePause} class="icon-button"><Pause /></button>
 		<button on:click={hadlePlay} class="icon-button"><Play /></button>
 		<button on:click={hadleStepForward} class="icon-button"><StepForward /></button>
@@ -62,7 +62,7 @@
 			<option value="data">Data</option>
 		</select>
 	</div>
-	<div class="row">
+	<div class="row_components">
 		<RegisterMemoryComponent memory={registersMemory} name="Registers" />
 		<MemoryComponent memory={dataMemory} name="Data mem" />
 		{#if cmdMemory}
@@ -77,11 +77,17 @@
 </div>
 
 <style>
-	.row {
+	.row_buttons {
 		display: flex;
 		flex-direction: row;
 		width: 100%;
 	}
+  .row_components {
+		display: flex;
+		flex-direction: row;
+    justify-content: space-between;
+		width: 100%;
+  }
 	.icon-button {
 		background: none;
 		border: none;

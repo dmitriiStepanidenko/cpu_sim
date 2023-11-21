@@ -1,14 +1,17 @@
 <script>
 	import Toaster from '$lib/Toaster.svelte';
+	import Header from './Header.svelte';
+	import './styles.css';
+	import '../app.css';
 </script>
 
 <Toaster />
 <div class="app">
+	<Header />
 
 	<main>
 		<slot />
 	</main>
-
 </div>
 
 <style>

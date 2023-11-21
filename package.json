@@ -4,7 +4,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-    "deploy": "npm run build && npx gh-pages -d build -t true",
+		"deploy": "npm run build && npx gh-pages -d build -t true",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -42,6 +42,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"lucide-svelte": "^0.290.0"
+		"lucide-svelte": "^0.290.0",
+		"svelte-ace": "^1.0.21",
+		"svelte-codemirror-editor": "^1.1.0"
 	}
 }
