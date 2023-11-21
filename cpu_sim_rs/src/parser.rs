@@ -10,6 +10,7 @@ use nom::{
     IResult,
 };
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
+use tracing::{debug, error, info, warn};
 use wasm_bindgen::prelude::*;
 
 type Data = HashMap<String, Vec<u8>>;
@@ -111,11 +112,13 @@ pub fn parse_program<'a>(input: &'a str, program: Program) -> IResult<&'a str, P
     let (input, program) = parse_section(input, program)?;
     let mut result = program;
     let mut current_input = input;
-    while let Ok((new_input, program)) = parse_section(current_input, result.clone()) {
+    loop {
+        let (current_input, program) = parse_section(current_input, result.clone())?;
         result = program;
-        current_input = new_input;
+        if current_input.len() == 0 {
+            return Ok((current_input, result));
+        }
     }
-    Ok((current_input, result))
 }
 
 // Helper function to parse an identifier (alphanumeric string)
@@ -181,6 +184,7 @@ fn parse_section<'a>(input: &'a str, mut program: Program) -> IResult<&'a str, P
         }
         _ => panic!("Unknown section!"),
     }
+    let (input_out, _) = multispace0(input_out)?;
     return Ok((input_out, program));
 }
 
@@ -476,10 +480,7 @@ mod tests {
                         RegisterAddress::GP(2),
                         AddressingMode::Immediate(v.get_direct_address("result").unwrap())
                     ),
-                    Command::Mov(
-                        RegisterAddress::GP(4),
-                        AddressingMode::Direct(0)
-                    ),
+                    Command::Mov(RegisterAddress::GP(4), AddressingMode::Direct(0)),
                 ],
                 ..Default::default()
             }
@@ -542,10 +543,7 @@ mod tests {
         assert_eq!(
             program.text,
             vec![
-                Command::Mov(
-                    RegisterAddress::GP(0),
-                    AddressingMode::Immediate(5)
-                ),
+                Command::Mov(RegisterAddress::GP(0), AddressingMode::Immediate(5)),
                 Command::Loop(0),
             ]
         );
@@ -558,10 +556,7 @@ mod tests {
         assert_eq!(
             Ok((
                 "",
-                Command::Mov(
-                    RegisterAddress::GP(0),
-                    AddressingMode::Immediate(5)
-                ),
+                Command::Mov(RegisterAddress::GP(0), AddressingMode::Immediate(5)),
             )),
             parse_mov(test_string, program.clone()),
         );
@@ -575,10 +570,7 @@ mod tests {
         assert_eq!(
             Ok((
                 "",
-                Command::Mov(
-                    RegisterAddress::GP(1),
-                    AddressingMode::Immediate(addr)
-                ),
+                Command::Mov(RegisterAddress::GP(1), AddressingMode::Immediate(addr)),
             )),
             parse_mov(test_string, program.clone()),
         );
@@ -588,9 +580,7 @@ mod tests {
                 "",
                 Command::Mov(
                     RegisterAddress::GP(2),
-                    AddressingMode::Indirect(RegisterAddress::GP(
-                            0
-                    ))
+                    AddressingMode::Indirect(RegisterAddress::GP(0))
                 ),
             )),
             parse_mov(test_string, program.clone()),
