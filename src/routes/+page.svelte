@@ -19,7 +19,7 @@
 
 	onMount(async () => {
 		init().then(() => {
-			cpu = new Cpu(70, 32, 32);
+			cpu = new Cpu(80, 32, 32);
 			registersMemory = cpu.get_memory(MemoryType.Registers);
 			dataMemory = cpu.get_memory(MemoryType.Data);
 			cmdMemory = cpu.get_memory(MemoryType.Command);

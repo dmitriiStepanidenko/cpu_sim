@@ -15,6 +15,7 @@
                 array2 db 6, 7, 8, 9, 10
                 result db 5 dup(0)
                 sum db 0
+
             section .text
                 mov CX, 5 
                 mov R0, array1 
@@ -34,15 +35,13 @@
             mov R0, array1 
             mov R1, array2 
             mov R2, result 
-
+            mov R4, 0
             sum:
-                mov R4, [R2]
-                add R4, R10, 
+                add R4, R4, [R2]
 
                 inc R2
 
             loop sum
-
   `;
 
 	function compile() {
