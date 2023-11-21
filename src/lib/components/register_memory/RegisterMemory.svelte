@@ -14,20 +14,31 @@
 	let numeral_system_value = 10;
 	let numeral_system_address = 10;
 
-	// Update a specific cell in the array
 	function handleCellChange(event: FocusEvent) {
 		const cellId = event.target?.id;
 		let newValue = event.target.innerText;
-		if (!isBinaryString(newValue)) {
-			create_error();
-			console.log($memory[cellId]);
-			event.target.innerText = $memory[cellId].toString(2).padStart(8, '0');
+		console.log(newValue);
+		if (isBinaryString(newValue) && numeral_system_value === 2) {
+			newValue = parseInt(newValue, 2);
+			console.log(newValue);
+			memory?.write_u8(cellId, newValue);
+			create_success();
 			return;
 		}
-
-		newValue = parseInt(newValue, 2);
-		memory?.write_u8(cellId, newValue);
-		create_success();
+		if (numeral_system_value === 10) {
+			newValue = parseInt(newValue, 10);
+			console.log(newValue);
+			memory?.write_u8(cellId, newValue);
+			create_success();
+			return;
+		}
+		create_error();
+		console.log($memory[cellId]);
+		if (numeral_system_value === 2) {
+			event.target.innerText = $memory[cellId].toString(2).padStart(8, '0');
+		} else {
+			event.target.innerText = $memory[cellId].toString();
+		}
 	}
 
 	function create_success() {
@@ -121,13 +132,16 @@
 							GP({index - 7})
 						{/if}
 					</div>
-					<div id={index} class="cell" contenteditable on:blur={handleCellChange}>
-						{#if numeral_system_value === 2}
+					{#if numeral_system_value == 2}
+						<div id={index} class="cell" contenteditable on:blur={handleCellChange}>
 							{data.toString(2).padStart(8, '0')}
-						{:else if numeral_system_value === 10}
+						</div>
+					{/if}
+					{#if numeral_system_value == 10}
+						<div id={index} class="cell" contenteditable on:blur={handleCellChange}>
 							{data}
-						{/if}
-					</div>
+						</div>
+					{/if}
 				</div>
 			{/each}
 		{/if}

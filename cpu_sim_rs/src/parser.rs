@@ -113,11 +113,10 @@ pub fn parse_program<'a>(input: &'a str, program: Program) -> IResult<&'a str, P
     let mut result = program;
     let mut current_input = input;
     loop {
-        let (current_input, program) = parse_section(current_input, result.clone())?;
-        result = program;
         if current_input.len() == 0 {
             return Ok((current_input, result));
         }
+        (current_input, result) = parse_section(current_input, result.clone())?;
     }
 }
 
@@ -450,7 +449,7 @@ mod tests {
                 mov R10, result 
                 add R10, sum, R10
                 inc [result]
-            loop sum
+            loop summ
             "#;
 
         let program = Program::default();

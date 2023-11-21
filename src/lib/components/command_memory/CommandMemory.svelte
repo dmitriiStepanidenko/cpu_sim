@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
+	import ModalCommand from './ModalCommand.svelte';
 	import { derived } from 'svelte/store';
 	import { addToast } from '$lib/Toaster.svelte';
 	import { CommandWrapper } from '$lib/pkg/cpu_sim_rs';
@@ -21,11 +22,10 @@
 			tempValue |= data << ((index % 4) * 8);
 			if ((index + 1) % 4 === 0) {
 				groups.push(tempValue);
-				tempValue = 0; // Reset the value for the next group
+				tempValue = 0;
 			}
 		});
 
-		// Handle the case where there are not enough cells to form a group of 4 at the end
 		if ($memory.length % 4 !== 0) {
 			groups.push(tempValue);
 		}
@@ -44,6 +44,17 @@
 
 	function changeNumeralSystemAddress(event) {
 		numeral_system_address = Number(event.currentTarget.value);
+	}
+
+	let showModal = false;
+  let modalCommandData = undefined;
+
+	function openModalCommand(event, value: string) {
+    modalCommandData = value;
+		showModal = true;
+	}
+	function closeModalCommand() {
+		showModal = false;
 	}
 </script>
 
@@ -82,7 +93,11 @@
 							{index * 4}
 						{/if}
 					</div>
-					<div class="cell">
+					<div
+						class="cell"
+						style="cursor: pointer"
+						on:click={(event) => openModalCommand(event, data)}
+					>
 						{data.toString(2)}
 						{decode(data)}
 					</div>
@@ -90,6 +105,11 @@
 			{/each}
 		{/if}
 	</div>
+	{#if showModal}
+		<div class="backdrop" on:click={closeModalCommand}>
+      <ModalCommand close={closeModalCommand} encodeData={modalCommandData}/>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -97,6 +117,18 @@
 		display: flex;
 		flex-direction: column;
 		border: 1px solid #000;
+	}
+
+	.backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.6);
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.row {
