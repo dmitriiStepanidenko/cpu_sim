@@ -3,10 +3,11 @@
 	import Header from './Header.svelte';
 	import './styles.css';
 	import '../app.css';
+	import { base } from '$app/paths';
 </script>
 
 <svelte:head>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href={base + "/manifest.json"} />
 </svelte:head>
 
 <Toaster />
