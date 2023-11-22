@@ -10,16 +10,18 @@
 <style>
 	.main {
     padding-top: 10px;
-    padding-down: 10px;
+    padding-bottom: 10px;
     padding-left: 50px;
     padding-right: 50px;
 		display: flex;
 		justify-content: center;
 		flex-direction: row;
+    align-items: center;
 	}
-	.main_pic {
-		padding-right: 50px;
-	}
+  img {
+    padding-right: 0px;
+    padding-left: 0px;
+  }
 	.main_title {
 		font-size: 32px;
 		padding-left: 50px;
