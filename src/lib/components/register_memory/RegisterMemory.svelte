@@ -68,9 +68,10 @@
 	}
 </script>
 
-<div>
+<div class="main">
 	{name}
-	<div>
+	<div class="flex-row" style="font-size:12px;">
+		<h4>Addr number system:</h4>
 		<label>
 			<input
 				checked={numeral_system_value === 2}
@@ -88,7 +89,8 @@
 			/>10
 		</label>
 	</div>
-	<div>
+	<div class="flex-row" style="font-size:12px;">
+		<h4>Value number system:</h4>
 		<label>
 			<input
 				checked={numeral_system_address === 2}
@@ -184,4 +186,14 @@
 		justify-content: center;
 		align-items: center;
 	}
+
+	.flex-row {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
+	}
+
+  .main {
+    min-width: 200px;
+  }
 </style>
