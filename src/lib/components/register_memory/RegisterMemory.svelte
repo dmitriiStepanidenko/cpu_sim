@@ -108,37 +108,41 @@
 	</div>
 	<div class="table">
 		<div class="row">
-			<div class="cell">Addr</div>
-			<div class="cell">Value</div>
+			<div class="cell addr">Addr</div>
+			<div class="cell value">Value</div>
 		</div>
 		{#if $memory != undefined}
 			{#each $memory as data, index}
 				<div class="row" style="font-size:13px">
-					<div class="cell">
-						{#if numeral_system_address === 2}
-							{index.toString(2).padStart(7, '0')}
-						{:else if numeral_system_address === 10}
-							{index}
-						{/if}
-						{#if index == 0}
-							PC
-						{:else if index >= 1 && index <= 4}
-							IR
-						{:else if index == 5}
-							CX
-						{:else if index == 6}
-							JMP
-						{:else}
-							GP({index - 7})
-						{/if}
+          <div class="cell addr" style="display: flex; content: space-between;">
+            <div style="padding-right: 5px;">
+							{#if numeral_system_address === 2}
+								{index.toString(2).padStart(7, '0')}
+							{:else if numeral_system_address === 10}
+								{index}
+							{/if}
+						</div>
+						<div>
+							{#if index == 0}
+								PC
+							{:else if index >= 1 && index <= 4}
+								IR
+							{:else if index == 5}
+								CX
+							{:else if index == 6}
+								JMP
+							{:else}
+								GP({index - 7})
+							{/if}
+						</div>
 					</div>
 					{#if numeral_system_value == 2}
-						<div id={index} class="cell" contenteditable on:blur={handleCellChange}>
+						<div id={index} class="cell value" contenteditable on:blur={handleCellChange}>
 							{data.toString(2).padStart(8, '0')}
 						</div>
 					{/if}
 					{#if numeral_system_value == 10}
-						<div id={index} class="cell" contenteditable on:blur={handleCellChange}>
+						<div id={index} class="cell value" contenteditable on:blur={handleCellChange}>
 							{data}
 						</div>
 					{/if}
@@ -155,6 +159,17 @@
 		border: 1px solid #000;
 	}
 
+	.addr {
+		flex: 1;
+    min-width: 120px;
+	}
+
+	.value {
+		flex: 2;
+		flex-direction: column;
+    min-width: 80px;
+	}
+
 	.row {
 		display: flex;
 		flex-direction: row;
@@ -165,5 +180,8 @@
 		flex: 1;
 		padding: 10px;
 		border: 1px solid #ccc;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

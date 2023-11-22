@@ -1,10 +1,10 @@
-<script>
+<script lang="ts">
 	import { CommandWrapper } from '$lib/pkg/cpu_sim_rs';
 
-	export let close;
-	export let encodeData;
+  export let close: (event: MouseEvent) => void; 
+	export let encodeData: number;
 
-  let data;
+  let data: string;
   $: data = CommandWrapper.decode(encodeData).get_data();
 </script>
 
@@ -30,9 +30,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+    z-index: 900;
 	}
 
 	.modal-content {
+    z-index: 900;
 		background-color: #fff;
 		padding: 20px;
 		border-radius: 5px;

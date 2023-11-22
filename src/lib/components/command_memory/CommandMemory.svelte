@@ -2,15 +2,13 @@
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import ModalCommand from './ModalCommand.svelte';
 	import { derived } from 'svelte/store';
-	import { addToast } from '$lib/Toaster.svelte';
 	import { CommandWrapper } from '$lib/pkg/cpu_sim_rs';
-	import { onMount } from 'svelte';
+  import {opacityStore} from '$lib/opacity_store'
+  import type {Writable} from 'svelte/store';
 
 	export let name: String;
 
-	export let memory: SharedMemory | undefined;
-
-	let tmp_value = 0;
+  export let memory: Writable<[number]>;
 
 	let numeral_system_address = 10;
 
@@ -33,7 +31,7 @@
 		return groups;
 	});
 
-	function decode(data) {
+	function decode(data: number) {
 		try {
 			return CommandWrapper.decode(data).get_data();
 		} catch (e) {
@@ -42,19 +40,21 @@
 		}
 	}
 
-	function changeNumeralSystemAddress(event) {
+  function changeNumeralSystemAddress(event: Event & {currentTarget : HTMLInputElement}) {
 		numeral_system_address = Number(event.currentTarget.value);
 	}
 
 	let showModal = false;
-	let modalCommandData = undefined;
+	let modalCommandData: number | undefined = undefined;
 
-	function openModalCommand(event, value: string) {
+	function openModalCommand(_: Event, value: number) {
 		modalCommandData = value;
 		showModal = true;
+    opacityStore.set(true);
 	}
 	function closeModalCommand() {
 		showModal = false;
+    opacityStore.set(false);
 	}
 </script>
 
@@ -128,11 +128,13 @@
 
 	.addr {
 		flex: 1;
+    min-width: 80px;
 	}
 
 	.value {
 		flex: 2;
 		flex-direction: column;
+    min-width: 80px;
 	}
 
 	.table {

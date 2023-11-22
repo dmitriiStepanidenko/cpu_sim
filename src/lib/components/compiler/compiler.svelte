@@ -4,6 +4,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { addToast } from '$lib/Toaster.svelte';
 	import CodeMirror from 'svelte-codemirror-editor';
+  import {opacityStore} from '$lib/opacity_store'
 
 	export let encodeFunction: Function;
 	const dispatch = createEventDispatcher();
@@ -75,7 +76,7 @@
 			create_success('Compiled successfully', '');
 		} catch (e: unknown) {
 			error = true;
-      program = undefined;
+			program = undefined;
 			if (e instanceof ParserErrror) {
 				highlitedNumber = rows - countNewLines(e.get_error_position());
 				create_error('Compilation error', `Line with error: ${highlitedNumber + 1}`);
@@ -115,7 +116,7 @@
 </script>
 
 <div class="main">
-	<div class="main_input">
+  <div class="main_input" class:opacity={$opacityStore}>
 		<CodeMirror bind:value={text} />
 	</div>
 	<div>
@@ -130,6 +131,10 @@
 	.main_input {
 		display: flex;
 		font-size: 14px;
+	}
+
+	.opacity {
+		opacity: 0.05;
 	}
 
 	button {
