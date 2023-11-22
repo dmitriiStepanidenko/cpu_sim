@@ -6,22 +6,22 @@
 	import { onMount } from 'svelte';
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import { Program } from '$lib/pkg/cpu_sim_rs';
-	import init, { Cpu, MemoryType, set_trace } from '$lib/pkg/cpu_sim_rs';
+	import init, { Cpu, MemoryType } from '$lib/pkg/cpu_sim_rs';
 	import { Pause, Play, StepForward } from 'lucide-svelte';
 
-  let cpu: Cpu; 
-  let registersMemory: SharedMemory;
-  let dataMemory: SharedMemory; 
-  let cmdMemory: SharedMemory;
-  let program: Program;
+	let cpu: Cpu;
+	let registersMemory: SharedMemory;
+	let dataMemory: SharedMemory;
+	let cmdMemory: SharedMemory;
+	let program: Program;
 
 	let selectedCmdRepresentation = 'cmd';
 
 	onMount(async () => {
 		if (cpu === undefined) {
 			init().then(() => {
-        set_trace();
-				cpu = new Cpu(80, 32, 32);
+				//set_trace();
+				cpu = new Cpu(80, 16, 16);
 				registersMemory = cpu.get_memory(MemoryType.Registers);
 				dataMemory = cpu.get_memory(MemoryType.Data);
 				cmdMemory = cpu.get_memory(MemoryType.Command);
@@ -35,24 +35,34 @@
 		console.log('Pause clicked!');
 		// Handle the click event
 	}
-	function hadlePlay() {
+
+	function handlePlay() {
 		console.log('Play clicked!');
 	}
+
 	function hadleStepForward() {
 		cpu?.do_op();
 		console.log('StepForward clicked!');
 	}
+
 	function encodeProgram(program: Program) {
 		cpu?.encode(program);
 	}
+
 	function handleProgram(event: CustomEvent<Program>) {
 		program = event.detail;
 		console.log(program); // { key: 'value' }
 	}
+
 	function handleSelectionCmdView(event: Event & { currentTarget: HTMLSelectElement }) {
 		selectedCmdRepresentation = event.currentTarget.value;
 	}
 </script>
+
+<svelte:head>
+	<title>Simulator of Harvard-architecture cpu</title>
+  <meta name="description" content="Put your description here.">
+</svelte:head>
 
 <div>
 	<div class="row_buttons">

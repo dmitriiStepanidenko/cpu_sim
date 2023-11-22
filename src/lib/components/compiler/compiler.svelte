@@ -116,7 +116,7 @@
 	}
 
 	.opacity {
-		opacity: 0.05;
+		opacity: 0.01;
 	}
 
 	button {

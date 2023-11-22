@@ -4,10 +4,14 @@ use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use tracing::debug;
+
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-#[wasm_bindgen]
+#[cfg(debug_assertions)]
+use tracing::debug;
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug)]
 pub enum MemoryType {
     Registers,
@@ -15,21 +19,21 @@ pub enum MemoryType {
     Data,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Cpu {
     command_memory: Rc<RefCell<Memory>>,
     data_memory: Rc<RefCell<Memory>>,
     registers: Rc<RefCell<Memory>>,
 }
 
-use std::sync::atomic::{AtomicBool, Ordering};
-
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[cfg(debug_assertions)]
 pub fn set_trace() {
     cfg_if::cfg_if! {
         if #[cfg(target_arch = "wasm32")] {
+            use std::sync::atomic::{AtomicBool, Ordering};
             static mut IS_SET: AtomicBool = AtomicBool::new(false);
-            unsafe{  
+            unsafe{
                 if !IS_SET.load(Ordering::Relaxed) {
                     console_error_panic_hook::set_once();
                     tracing_wasm::set_as_global_default_with_config(
@@ -46,9 +50,9 @@ pub fn set_trace() {
     }
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl Cpu {
-    #[wasm_bindgen(constructor)]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen(constructor))]
     pub fn new(
         command_memory_size: Option<usize>,
         data_memory_size: Option<usize>,
@@ -65,14 +69,29 @@ impl Cpu {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn resize_registers(&mut self, size: usize) {
+        self.registers.borrow_mut().resize(size);
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn resize_data(&mut self, size: usize) {
+        self.data_memory.borrow_mut().resize(size);
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn resize_cmd(&mut self, size: usize) {
+        self.command_memory.borrow_mut().resize(size);
+    }
+
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn reset(&mut self) {
         self.command_memory.borrow_mut().reset();
         self.registers.borrow_mut().reset();
         self.data_memory.borrow_mut().reset();
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn encode(&mut self, program: &Program) {
         // 1. Encode data
         let mut ptr: u8 = 0;
@@ -93,7 +112,8 @@ impl Cpu {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg(target_arch = "wasm32")]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_memory(&self, mem_type: MemoryType) -> SharedMemory {
         let memory = match mem_type {
             MemoryType::Registers => Rc::clone(&self.registers),
@@ -104,21 +124,25 @@ impl Cpu {
         SharedMemory(memory)
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn do_op(&mut self) -> Result<(), CpuErrors> {
+        #[cfg(debug_assertions)]
         debug!("do_op before fetch");
         // 1. Fetch
         self.fetch();
+        #[cfg(debug_assertions)]
         debug!("do_op after fetch");
         // 2. Decode
         let command = self.decode()?;
-        println!("command: {:?}", command);
+        #[cfg(debug_assertions)]
         debug!("do_op after decode");
         // 3. Execute
         self.execute(command);
+        #[cfg(debug_assertions)]
         debug!("do_op after execute");
         // 4. Update
         self.update();
+        #[cfg(debug_assertions)]
         debug!("do_op after update");
         return Ok(());
     }
@@ -127,9 +151,7 @@ impl Cpu {
         // Read the next instruction by address pointed by the RegisterAddress::PC
         // and place it's value to IR
         let pc = self.registers.borrow().read_u8(RegisterAddress::PC.addr());
-        println!("pc : {}", pc);
         let command = self.command_memory.borrow().read_u32(pc as usize);
-        println!("command: {:b}", command);
         self.registers
             .borrow_mut()
             .write_u32(RegisterAddress::IR.addr(), command);
@@ -141,7 +163,6 @@ impl Cpu {
     }
     fn execute(&mut self, command: Command) {
         // Execute decoded command
-        println!("{:?}", command);
         command.execute(
             &mut self.data_memory.borrow_mut(),
             &mut self.registers.borrow_mut(),
@@ -221,7 +242,7 @@ impl RegisterAddress {
 }
 
 #[derive(Debug)]
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub enum CpuErrors {
     UnknownAddressingMode,
 }
@@ -247,8 +268,6 @@ impl AddressingMode {
     pub fn from(value: u32) -> Result<(Self, u32), CpuErrors> {
         let bits_value = (value as u8) & 0b_0000_0111;
         let position = 3;
-        println!("value = {:b}", value);
-        println!("Addressing mode value = {:b}", bits_value);
         match bits_value {
             0 => return Ok((Self::Immediate((value >> 3) as u8), value >> (3 + 8))),
             1 => return Ok((Self::Direct((value >> 3) as u8), value >> (3 + 8))),
@@ -516,42 +535,48 @@ impl Command {
     }
 }
 
-#[wasm_bindgen]
+#[cfg(target_arch = "wasm32")]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct SharedMemory(Rc<RefCell<Memory>>);
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+#[cfg(target_arch = "wasm32")]
 impl SharedMemory {
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn resize(&mut self, size: usize) {
+        self.0.borrow_mut().resize(size);
+    }
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn reset(&mut self) {
         self.0.borrow_mut().reset();
     }
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn subscribe(&mut self, callback: js_sys::Function) -> JsValue {
         self.0.borrow_mut().subscribe(callback)
     }
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn write_u8(&mut self, addr: usize, value: u8) {
         self.0.borrow_mut().write_u8(addr, value)
     }
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn read_u8(&self, addr: usize) -> u8 {
         self.0.borrow().read_u8(addr)
     }
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn write_u32(&mut self, addr: usize, value: u32) {
         self.0.borrow_mut().write_u32(addr, value)
     }
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn read_u32(&self, addr: usize) -> u32 {
         self.0.borrow().read_u32(addr)
     }
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn write_all(&mut self, data: Uint8Array) {
         self.0.borrow_mut().write_all(data)
     }
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 #[derive(Debug)]
 pub struct Memory {
     data: Vec<u8>,
@@ -560,9 +585,9 @@ pub struct Memory {
 }
 
 impl Memory {
-    pub fn new(value: Option<usize>) -> Self {
+    pub fn new(size: Option<usize>) -> Self {
         Memory {
-            data: vec![0; value.unwrap_or(0)],
+            data: vec![0; size.unwrap_or(0)],
             subscribers: Rc::new(RefCell::new(HashMap::new())),
             next_subscriber: 0,
         }
@@ -578,6 +603,10 @@ impl Memory {
         for i in self.data.iter_mut() {
             *i = 0;
         }
+    }
+
+    pub fn resize(&mut self, size: usize) {
+        self.data = vec![0; size];
     }
 
     pub fn read_u8(&self, addr: usize) -> u8 {
@@ -633,6 +662,7 @@ impl Memory {
         }
     }
 
+    #[cfg(target_arch = "wasm32")]
     pub fn subscribe(&mut self, callback: js_sys::Function) -> JsValue {
         let array: Uint8Array = Uint8Array::from(self.data.as_slice());
         let js_array: JsValue = array.into();
@@ -649,6 +679,7 @@ impl Memory {
     }
 }
 
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 extern "C" {
     #[wasm_bindgen(js_namespace = console)]
@@ -663,7 +694,6 @@ mod tests {
     fn encode_decode_loop() {
         let cmd = Command::Loop(0b_0101_0101);
         let encode = cmd.encode();
-        println!("encoded:{:032b}", encode);
         assert_eq!(Command::decode(encode).unwrap(), cmd);
     }
 
@@ -671,7 +701,6 @@ mod tests {
     fn encode_decode_mov() {
         let cmd = Command::Mov(RegisterAddress::GP(11), AddressingMode::Direct(15));
         let encode = cmd.encode();
-        println!("encoded:{:032b}", encode);
         assert_eq!(Command::decode(encode).unwrap(), cmd);
     }
 
@@ -684,7 +713,6 @@ mod tests {
             AddressingMode::Register(RegisterAddress::GP(11)),
         );
         let encode = cmd.encode();
-        println!("encoded:{:032b}", encode);
         assert_eq!(Command::decode(encode).unwrap(), cmd);
     }
 
@@ -692,7 +720,6 @@ mod tests {
     fn encode_decode_inc() {
         let cmd = Command::Inc(AddressingMode::Register(RegisterAddress::GP(4)));
         let encode = cmd.encode();
-        println!("encoded:{:032b}", encode);
         assert_eq!(Command::decode(encode).unwrap(), cmd);
     }
 
@@ -703,7 +730,6 @@ mod tests {
             RegisterAddress::PC,
         );
         let encode = cmd.encode();
-        println!("encoded:{:032b}", encode);
         assert_eq!(Command::decode(encode).unwrap(), cmd);
     }
 
@@ -769,7 +795,6 @@ mod tests {
         assert_eq!(0b1100101_001, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        println!("{:b}", result);
         assert_eq!(0b1100101_001_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
@@ -797,7 +822,6 @@ mod tests {
         assert_eq!(0b1101001_010, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        println!("{:b}", result);
         assert_eq!(0b1101001_010_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
@@ -825,7 +849,6 @@ mod tests {
         assert_eq!(0b1101001_011, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        println!("{:b}", result);
         assert_eq!(0b1101001_011_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
@@ -915,7 +938,6 @@ mod tests {
 
         let (input, program) = parse_program(test_string, Program::default()).unwrap();
         assert_eq!(input.len(), 0);
-        println!("{:?}", program);
         let mut cpu = Cpu::new(Some(64), Some(64), Some(64));
         cpu.encode(&program);
         let _ = cpu.do_op();

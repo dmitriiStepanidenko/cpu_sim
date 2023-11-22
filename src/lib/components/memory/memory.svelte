@@ -45,8 +45,8 @@
 	function create_success() {
 		addToast({
 			data: {
-				title: 'Успешный успех!',
-				description: 'Новое значение ячейки памяти было записано!',
+				title: 'Success!',
+				description: 'Value has successfully changed!',
 				color: 'green'
 			}
 		});
@@ -54,8 +54,8 @@
 	function create_error() {
 		addToast({
 			data: {
-				title: 'Неуспешный неуспех!',
-				description: 'Новое значение ячейки памяти НЕ было записано!',
+				title: 'Error!',
+				description: 'Value has not changed!',
 				color: 'red'
 			}
 		});
@@ -126,7 +126,7 @@
 					</div>
 					{#if numeral_system_value == 2}
 						<div
-							id={index.toString()}
+							id={index.toString()+"_2"}
 							class="cell value"
 							contenteditable
 							on:blur={handleCellChange}
@@ -136,7 +136,7 @@
 					{/if}
 					{#if numeral_system_value == 10}
 						<div
-							id={index.toString()}
+							id={index.toString()+"_10"}
 							class="cell value"
 							contenteditable
 							on:blur={handleCellChange}

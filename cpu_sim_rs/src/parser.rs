@@ -160,7 +160,6 @@ fn parse_define_byte(input: &str) -> IResult<&str, (&str, Vec<u8>)> {
 
     let (input, result) = alt((dup, parse_comma_number))(input)?;
 
-    println!("numbers: {:?}", result);
 
     Ok((input, (label, result)))
 }
@@ -534,8 +533,7 @@ mod tests {
             label:
                 mov R0, 5
             loop label"#;
-        let o = parse_text_section(test_string, &mut program).unwrap();
-        println!("{:?}", o);
+        let _o = parse_text_section(test_string, &mut program).unwrap();
         assert_eq!(
             program.text,
             vec![

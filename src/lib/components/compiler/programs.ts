@@ -36,6 +36,7 @@ const sum = `section .data
   array2 db 6, 7, 8, 9, 10
   result db 5 dup(0)
   sum db 0
+
 section .text
   mov CX, 5 
   mov R0, array1 
