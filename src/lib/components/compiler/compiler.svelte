@@ -5,11 +5,13 @@
 	import { addToast } from '$lib/Toaster.svelte';
 	import CodeMirror from 'svelte-codemirror-editor';
 
+	export let encodeFunction: Function;
 	const dispatch = createEventDispatcher();
 	let error = false;
 	$: rows = countNewLines(text);
 	let numbers;
 	let highlitedNumber: undefined | number = undefined;
+	let encodeButtonActive = false;
 
 	$: {
 		numbers = [];
@@ -20,6 +22,14 @@
 
 	function sendToParent() {
 		dispatch('program', program);
+	}
+
+	$: {
+		if (program != undefined) {
+			encodeButtonActive = true;
+		} else {
+			encodeButtonActive = false;
+		}
 	}
 
 	let program: Program | undefined;
@@ -64,8 +74,9 @@
 			sendToParent();
 			create_success('Compiled successfully', '');
 		} catch (e: unknown) {
+			error = true;
+      program = undefined;
 			if (e instanceof ParserErrror) {
-				error = true;
 				highlitedNumber = rows - countNewLines(e.get_error_position());
 				create_error('Compilation error', `Line with error: ${highlitedNumber + 1}`);
 			} else {
@@ -97,18 +108,53 @@
 			}
 		});
 	}
+
+	function encode() {
+		encodeFunction(program);
+	}
 </script>
 
 <div class="main">
 	<div class="main_input">
 		<CodeMirror bind:value={text} />
 	</div>
-	<button on:click={() => compile()}>Compile</button>
+	<div>
+		<button class="ready" on:click={() => compile()}>Compile</button>
+		<button disabled={!encodeButtonActive} class:ready={encodeButtonActive} on:click={encode}
+			>Encode</button
+		>
+	</div>
 </div>
 
 <style>
 	.main_input {
 		display: flex;
 		font-size: 14px;
+	}
+
+	button {
+		border: none;
+		padding: 10px 15px;
+		text-align: center;
+		text-decoration: none;
+		display: inline-block;
+		text-transform: uppercase;
+		box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+		font-weight: 500;
+		cursor: pointer;
+		border-radius: 30px;
+	}
+
+	button:hover.ready {
+		background-color: #2ee59d;
+		box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
+		color: #fff;
+		transform: translateY(-1px);
+	}
+
+	button:not(.ready) {
+		background-color: red;
+		color: #fff;
+		cursor: default;
 	}
 </style>

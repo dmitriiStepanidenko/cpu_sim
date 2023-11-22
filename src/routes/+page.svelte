@@ -38,7 +38,7 @@
 		cpu?.do_op();
 		console.log('StepForward clicked!');
 	}
-	function encodeProgram() {
+	function encodeProgram(program: Program) {
 		console.log(program);
 		cpu?.encode(program);
 	}
@@ -56,7 +56,6 @@
 		<button on:click={handlePause} class="icon-button"><Pause /></button>
 		<button on:click={hadlePlay} class="icon-button"><Play /></button>
 		<button on:click={hadleStepForward} class="icon-button"><StepForward /></button>
-		<button on:click={encodeProgram}>Encode</button>
 		<select on:change={handleSelectionCmdView}>
 			<option value="cmd">Cmd</option>
 			<option value="data">Data</option>
@@ -72,7 +71,7 @@
 				<CommandMemoryComponent memory={cmdMemory} name="Cmd mem" />
 			{/if}
 		{/if}
-		<CompilerComponent on:program={handleProgram} />
+    <CompilerComponent on:program={handleProgram} encodeFunction={encodeProgram}/>
 	</div>
 </div>
 
