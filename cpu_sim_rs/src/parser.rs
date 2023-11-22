@@ -10,7 +10,6 @@ use nom::{
     IResult,
 };
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
-use tracing::{debug, error, info, warn};
 use wasm_bindgen::prelude::*;
 
 type Data = HashMap<String, Vec<u8>>;
@@ -484,8 +483,6 @@ mod tests {
                 ..Default::default()
             }
         )
-        //println!("{:?}", v.as_mut().unwrap().0);
-        //println!("{:?}", v.as_mut().unwrap().1);
     }
 
     #[test]

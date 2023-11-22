@@ -18,7 +18,7 @@
 		const groups = [];
 		let tempValue = 0;
 
-		$memory.forEach((data, index) => {
+		$memory.forEach((data: number, index: number) => {
 			tempValue |= data << ((index % 4) * 8);
 			if ((index + 1) % 4 === 0) {
 				groups.push(tempValue);
@@ -47,10 +47,10 @@
 	}
 
 	let showModal = false;
-  let modalCommandData = undefined;
+	let modalCommandData = undefined;
 
 	function openModalCommand(event, value: string) {
-    modalCommandData = value;
+		modalCommandData = value;
 		showModal = true;
 	}
 	function closeModalCommand() {
@@ -59,8 +59,9 @@
 </script>
 
 <div>
-	{name} Commad memory view!
-	<div>
+	<h3>{name}</h3>
+	<div class="flex-row" style="font-size:12px;">
+		<h4>Addr number system:</h4>
 		<label>
 			<input
 				checked={numeral_system_address === 2}
@@ -80,13 +81,13 @@
 	</div>
 	<div class="table">
 		<div class="row">
-			<div class="cell">Addr</div>
-			<div class="cell">Value</div>
+			<div class="cell addr">Addr</div>
+			<div class="cell value">Value</div>
 		</div>
 		{#if $memory != undefined}
 			{#each $groupedMemory as data, index}
 				<div class="row" style="font-size:14px">
-					<div class="cell">
+					<div class="cell addr">
 						{#if numeral_system_address === 2}
 							{(index * 4).toString(2).padStart(7, '0')}
 						{:else if numeral_system_address === 10}
@@ -94,12 +95,12 @@
 						{/if}
 					</div>
 					<div
-						class="cell"
+						class="cell value"
 						style="cursor: pointer"
 						on:click={(event) => openModalCommand(event, data)}
 					>
-						{data.toString(2)}
-						{decode(data)}
+						<div>{data.toString(2)}</div>
+						<div>{decode(data)}</div>
 					</div>
 				</div>
 			{/each}
@@ -107,18 +108,12 @@
 	</div>
 	{#if showModal}
 		<div class="backdrop" on:click={closeModalCommand}>
-      <ModalCommand close={closeModalCommand} encodeData={modalCommandData}/>
+			<ModalCommand close={closeModalCommand} encodeData={modalCommandData} />
 		</div>
 	{/if}
 </div>
 
 <style>
-	.table {
-		display: flex;
-		flex-direction: column;
-		border: 1px solid #000;
-	}
-
 	.backdrop {
 		position: fixed;
 		top: 0;
@@ -131,15 +126,38 @@
 		align-items: center;
 	}
 
+	.addr {
+		flex: 1;
+	}
+
+	.value {
+		flex: 2;
+		flex-direction: column;
+	}
+
+	.table {
+		display: flex;
+		flex-direction: column;
+		border: 1px solid #000;
+		justify-content: flex-start;
+	}
+
 	.row {
 		display: flex;
 		flex-direction: row;
-		width: 100%;
+		justify-content: flex-start;
 	}
 
 	.cell {
-		flex: 1;
-		padding: 10px;
 		border: 1px solid #ccc;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.flex-row {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-around;
 	}
 </style>

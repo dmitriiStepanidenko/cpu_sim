@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import { Program } from '$lib/pkg/cpu_sim_rs';
-	import init, { Cpu, MemoryType } from '$lib/pkg/cpu_sim_rs';
+	import init, { Cpu, MemoryType, set_trace } from '$lib/pkg/cpu_sim_rs';
 	import { Pause, Play, StepForward } from 'lucide-svelte';
 
 	let cpu: Cpu | undefined = undefined;
@@ -18,13 +18,17 @@
 	let selectedCmdRepresentation = 'cmd';
 
 	onMount(async () => {
-		init().then(() => {
-			cpu = new Cpu(80, 32, 32);
-			registersMemory = cpu.get_memory(MemoryType.Registers);
-			dataMemory = cpu.get_memory(MemoryType.Data);
-			cmdMemory = cpu.get_memory(MemoryType.Command);
-			program = new Program();
-		});
+		if (cpu === undefined) {
+			init().then(() => {
+        set_trace();
+				cpu = new Cpu(80, 32, 32);
+				registersMemory = cpu.get_memory(MemoryType.Registers);
+				dataMemory = cpu.get_memory(MemoryType.Data);
+				cmdMemory = cpu.get_memory(MemoryType.Command);
+
+				program = new Program();
+			});
+		}
 	});
 
 	function handlePause() {
@@ -39,22 +43,21 @@
 		console.log('StepForward clicked!');
 	}
 	function encodeProgram(program: Program) {
-		console.log(program);
 		cpu?.encode(program);
 	}
-	function handleProgram(event) {
+	function handleProgram(event: CustomEvent<Program>) {
 		program = event.detail;
 		console.log(program); // { key: 'value' }
 	}
-	function handleSelectionCmdView(event) {
-		selectedCmdRepresentation = event.target.value;
+	function handleSelectionCmdView(event: Event & { currentTarget: HTMLSelectElement }) {
+		selectedCmdRepresentation = event.currentTarget.value;
 	}
 </script>
 
 <div>
 	<div class="row_buttons">
-		<button on:click={handlePause} class="icon-button"><Pause /></button>
-		<button on:click={hadlePlay} class="icon-button"><Play /></button>
+		<!--<button disabled on:click={handlePause} class="icon-button"><Pause /></button>
+    <button disabled on:click={hadlePlay} class="icon-button"><Play /></button>-->
 		<button on:click={hadleStepForward} class="icon-button"><StepForward /></button>
 		<select on:change={handleSelectionCmdView}>
 			<option value="cmd">Cmd</option>
@@ -71,7 +74,7 @@
 				<CommandMemoryComponent memory={cmdMemory} name="Cmd mem" />
 			{/if}
 		{/if}
-    <CompilerComponent on:program={handleProgram} encodeFunction={encodeProgram}/>
+		<CompilerComponent on:program={handleProgram} encodeFunction={encodeProgram} />
 	</div>
 </div>
 
@@ -81,16 +84,19 @@
 		flex-direction: row;
 		width: 100%;
 	}
-  .row_components {
+	.row_components {
 		display: flex;
 		flex-direction: row;
-    justify-content: space-between;
+		justify-content: space-between;
 		width: 100%;
-  }
+	}
 	.icon-button {
 		background: none;
 		border: none;
 		padding: 0;
 		cursor: pointer;
+	}
+	:disabled:hover {
+		cursor: default;
 	}
 </style>

@@ -1,11 +1,10 @@
 use crate::parser::Program;
-use crate::wasm::CommandWrapper;
 use js_sys::Uint8Array;
 use serde::{Deserialize, Serialize};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
-use tracing::{debug, error, info, warn};
+use tracing::debug;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -23,6 +22,30 @@ pub struct Cpu {
     registers: Rc<RefCell<Memory>>,
 }
 
+use std::sync::atomic::{AtomicBool, Ordering};
+
+#[wasm_bindgen]
+pub fn set_trace() {
+    cfg_if::cfg_if! {
+        if #[cfg(target_arch = "wasm32")] {
+            static mut IS_SET: AtomicBool = AtomicBool::new(false);
+            unsafe{  
+                if !IS_SET.load(Ordering::Relaxed) {
+                    console_error_panic_hook::set_once();
+                    tracing_wasm::set_as_global_default_with_config(
+                        tracing_wasm::WASMLayerConfigBuilder::new()
+                            .set_max_level(tracing::Level::DEBUG)
+                            .build(),
+                    );
+                    *IS_SET.get_mut() = true;
+                }
+            }
+        } else {
+            tracing_subscriber::fmt::init()
+        }
+    }
+}
+
 #[wasm_bindgen]
 impl Cpu {
     #[wasm_bindgen(constructor)]
@@ -31,19 +54,6 @@ impl Cpu {
         data_memory_size: Option<usize>,
         registers_size: Option<usize>,
     ) -> Self {
-        cfg_if::cfg_if! {
-        if #[cfg(target_arch = "wasm32")] {
-            console_error_panic_hook::set_once();
-            tracing_wasm::set_as_global_default_with_config(
-                tracing_wasm::WASMLayerConfigBuilder::new()
-                    .set_max_level(tracing::Level::DEBUG)
-                    .build(),
-            );
-        } else {
-            tracing_subscriber::fmt::init()
-        }
-        }
-
         let command_memory = Rc::new(RefCell::new(Memory::new(command_memory_size)));
         let data_memory = Rc::new(RefCell::new(Memory::new(data_memory_size)));
         let registers = Rc::new(RefCell::new(Memory::new(registers_size)));
@@ -53,6 +63,13 @@ impl Cpu {
             data_memory,
             registers,
         }
+    }
+
+    #[wasm_bindgen]
+    pub fn reset(&mut self) {
+        self.command_memory.borrow_mut().reset();
+        self.registers.borrow_mut().reset();
+        self.data_memory.borrow_mut().reset();
     }
 
     #[wasm_bindgen]
@@ -169,7 +186,7 @@ impl RegisterAddress {
             RegisterAddress::IR => 1,  // 1-4
             RegisterAddress::CX => 5,  // 5-5
             RegisterAddress::JMP => 6, // 6-6
-            RegisterAddress::GP(reg_num) => (Self::SPECIAL_REGS_LEN as usize + *reg_num as usize), // Assuming GP registers start at index 2
+            RegisterAddress::GP(reg_num) => Self::SPECIAL_REGS_LEN as usize + *reg_num as usize, // Assuming GP registers start at index 2
         }
     }
 
@@ -278,7 +295,7 @@ impl AddressingMode {
         }
     }
     pub fn encode(&self, mut value: u32, position: u32) -> (u32, u32) {
-        let mut reg_value: u32 = 0;
+        let mut reg_value: u32;
 
         let mut length = 3; // adressing code length
         match self {
@@ -352,7 +369,7 @@ impl Command {
 
     const LOOP: u8 = 7;
     const JMP: u8 = 8;
-    const INT: u8 = 9;
+    // const INT: u8 = 9;
 
     pub fn encode(&self) -> u32 {
         let mut result: u32;
@@ -505,6 +522,11 @@ pub struct SharedMemory(Rc<RefCell<Memory>>);
 #[wasm_bindgen]
 impl SharedMemory {
     #[wasm_bindgen]
+    pub fn reset(&mut self) {
+        self.0.borrow_mut().reset();
+    }
+
+    #[wasm_bindgen]
     pub fn subscribe(&mut self, callback: js_sys::Function) -> JsValue {
         self.0.borrow_mut().subscribe(callback)
     }
@@ -550,6 +572,12 @@ impl Memory {
     fn check_out_of_bounds(&self, addr: usize, msg: &str) {
         if addr >= self.data.len() {
             panic!("{msg}");
+        }
+    }
+
+    pub fn reset(&mut self) {
+        for i in self.data.iter_mut() {
+            *i = 0;
         }
     }
 
@@ -887,22 +915,22 @@ mod tests {
             "#;
 
         let (input, program) = parse_program(test_string, Program::default()).unwrap();
+        assert_eq!(input.len(), 0);
         println!("{:?}", program);
         let mut cpu = Cpu::new(Some(64), Some(64), Some(64));
         cpu.encode(&program);
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        cpu.do_op();
-        assert_eq!(0, 1);
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
+        let _ = cpu.do_op();
     }
 }

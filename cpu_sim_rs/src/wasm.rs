@@ -1,4 +1,4 @@
-use crate::cpu::{AddressingMode, Command, CpuErrors, RegisterAddress};
+use crate::cpu::{AddressingMode, Command, CpuErrors};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -81,37 +81,3 @@ pub enum WasmRegisterAddress {
     GP = 3, // General-purpose register placeholder
 }
 
-//// Wrapper struct for the enum
-//#[wasm_bindgen]
-//pub struct RegisterAddressWrapper {
-//    address: RegisterAddress,
-//}
-//
-//#[wasm_bindgen]
-//impl RegisterAddressWrapper {
-//    // Function to create a new wrapper from a C-style enum and optional data
-//    #[wasm_bindgen(constructor)]
-//    pub fn new(addr_type: WasmRegisterAddress, gp_number: Option<u8>) -> RegisterAddressWrapper {
-//        let address = match addr_type {
-//            WasmRegisterAddress::PC => RegisterAddress::PC,
-//            WasmRegisterAddress::IR => RegisterAddress::IR,
-//            WasmRegisterAddress::CX => RegisterAddress::CX,
-//            WasmRegisterAddress::GP => {
-//                // Use the provided general-purpose register number, defaulting to 0 if none is provided
-//                RegisterAddress::GP(gp_number.unwrap_or(3))
-//            }
-//        };
-//        RegisterAddressWrapper { address }
-//    }
-//
-//    // Additional methods to interact with the enum can be added here
-//    // For example, a method to get the underlying enum variant as a string
-//    pub fn get_type(&self) -> String {
-//        match self.address {
-//            RegisterAddress::PC => "PC".to_string(),
-//            RegisterAddress::IR => "IR".to_string(),
-//            RegisterAddress::CX => "CX".to_string(),
-//            RegisterAddress::GP(reg_num) => format!("R{}", reg_num),
-//        }
-//    }
-//}
