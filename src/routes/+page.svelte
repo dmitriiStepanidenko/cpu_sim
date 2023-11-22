@@ -61,7 +61,11 @@
 
 <svelte:head>
 	<title>Simulator of Harvard-architecture cpu</title>
-  <meta name="description" content="Put your description here.">
+	<meta
+		name="description"
+		content="Simulator of imaginary cpu with Harvard architecture, 
+    that build for educational purpose with rust and sveltekit"
+	/>
 </svelte:head>
 
 <div>
