@@ -525,7 +525,6 @@ impl SharedMemory {
     pub fn reset(&mut self) {
         self.0.borrow_mut().reset();
     }
-
     #[wasm_bindgen]
     pub fn subscribe(&mut self, callback: js_sys::Function) -> JsValue {
         self.0.borrow_mut().subscribe(callback)

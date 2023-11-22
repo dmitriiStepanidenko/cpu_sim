@@ -1,14 +1,13 @@
 <script lang="ts">
-	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import ModalCommand from './ModalCommand.svelte';
 	import { derived } from 'svelte/store';
 	import { CommandWrapper } from '$lib/pkg/cpu_sim_rs';
   import {opacityStore} from '$lib/opacity_store'
-  import type {Writable} from 'svelte/store';
+  import type {Readable} from 'svelte/store';
 
 	export let name: String;
 
-  export let memory: Writable<[number]>;
+  export let memory: Readable<[number]>;
 
 	let numeral_system_address = 10;
 
@@ -45,7 +44,7 @@
 	}
 
 	let showModal = false;
-	let modalCommandData: number | undefined = undefined;
+  let modalCommandData: number; 
 
 	function openModalCommand(_: Event, value: number) {
 		modalCommandData = value;
@@ -94,22 +93,22 @@
 							{index * 4}
 						{/if}
 					</div>
-					<div
+					<button
 						class="cell value"
 						style="cursor: pointer"
 						on:click={(event) => openModalCommand(event, data)}
 					>
 						<div>{data.toString(2)}</div>
 						<div>{decode(data)}</div>
-					</div>
+					</button>
 				</div>
 			{/each}
 		{/if}
 	</div>
 	{#if showModal}
-		<div class="backdrop" on:click={closeModalCommand}>
+		<button class="backdrop" on:click={closeModalCommand}>
 			<ModalCommand close={closeModalCommand} encodeData={modalCommandData} />
-		</div>
+		</button>
 	{/if}
 </div>
 

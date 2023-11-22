@@ -9,11 +9,11 @@
 	import init, { Cpu, MemoryType, set_trace } from '$lib/pkg/cpu_sim_rs';
 	import { Pause, Play, StepForward } from 'lucide-svelte';
 
-	let cpu: Cpu | undefined = undefined;
-	let registersMemory: SharedMemory | undefined;
-	let dataMemory: SharedMemory | undefined;
-	let cmdMemory: SharedMemory | undefined;
-	let program: Program | undefined;
+  let cpu: Cpu; 
+  let registersMemory: SharedMemory;
+  let dataMemory: SharedMemory; 
+  let cmdMemory: SharedMemory;
+  let program: Program;
 
 	let selectedCmdRepresentation = 'cmd';
 

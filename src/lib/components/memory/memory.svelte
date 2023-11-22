@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import { addToast } from '$lib/Toaster.svelte';
+	import type { Readable } from 'svelte/store';
+	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 
 	export let name: String;
 
-	export let memory: SharedMemory | undefined;
+	export let memory: Readable<[number]> & SharedMemory;
 
 	function isBinaryString(str: string) {
 		var binaryPattern = /^[01]+$/;
@@ -60,10 +61,10 @@
 		});
 	}
 
-	function changeNumeralSystemValue(event) {
+	function changeNumeralSystemValue(event: Event & { currentTarget: HTMLInputElement }) {
 		numeral_system_value = Number(event.currentTarget.value);
 	}
-	function changeNumeralSystemAddress(event) {
+	function changeNumeralSystemAddress(event: Event & { currentTarget: HTMLInputElement }) {
 		numeral_system_address = Number(event.currentTarget.value);
 	}
 </script>
@@ -124,12 +125,22 @@
 						{/if}
 					</div>
 					{#if numeral_system_value == 2}
-						<div id={index} class="cell value" contenteditable on:blur={handleCellChange}>
+						<div
+							id={index.toString()}
+							class="cell value"
+							contenteditable
+							on:blur={handleCellChange}
+						>
 							{data.toString(2).padStart(8, '0')}
 						</div>
 					{/if}
 					{#if numeral_system_value == 10}
-						<div id={index} class="cell value" contenteditable on:blur={handleCellChange}>
+						<div
+							id={index.toString()}
+							class="cell value"
+							contenteditable
+							on:blur={handleCellChange}
+						>
 							{data}
 						</div>
 					{/if}
