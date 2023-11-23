@@ -8,14 +8,13 @@
 	import { Program } from '$lib/pkg/cpu_sim_rs';
 	import init, { Cpu, MemoryType } from '$lib/pkg/cpu_sim_rs';
 	import { Pause, Play, StepForward } from 'lucide-svelte';
+	import ModalWindow from '$lib/ModalWindow.svelte';
 
 	let cpu: Cpu;
 	let registersMemory: SharedMemory;
 	let dataMemory: SharedMemory;
 	let cmdMemory: SharedMemory;
 	let program: Program;
-
-	let selectedCmdRepresentation = 'cmd';
 
 	onMount(async () => {
 		if (cpu === undefined) {
@@ -53,10 +52,6 @@
 		program = event.detail;
 		console.log(program); // { key: 'value' }
 	}
-
-	function handleSelectionCmdView(event: Event & { currentTarget: HTMLSelectElement }) {
-		selectedCmdRepresentation = event.currentTarget.value;
-	}
 </script>
 
 <svelte:head>
@@ -73,23 +68,16 @@
 		<!--<button disabled on:click={handlePause} class="icon-button"><Pause /></button>
     <button disabled on:click={hadlePlay} class="icon-button"><Play /></button>-->
 		<button on:click={hadleStepForward} class="icon-button"><StepForward /></button>
-		<select on:change={handleSelectionCmdView}>
-			<option value="cmd">Cmd</option>
-			<option value="data">Data</option>
-		</select>
 	</div>
 	<div class="row_components">
+		<CompilerComponent on:program={handleProgram} encodeFunction={encodeProgram} />
 		<RegisterMemoryComponent memory={registersMemory} name="Registers" />
 		<MemoryComponent memory={dataMemory} name="Data mem" />
 		{#if cmdMemory}
-			{#if selectedCmdRepresentation === 'data'}
-				<MemoryComponent memory={cmdMemory} name="Cmd mem" />
-			{:else}
-				<CommandMemoryComponent memory={cmdMemory} name="Cmd mem" />
-			{/if}
+			<CommandMemoryComponent memory={cmdMemory} name="Cmd mem" />
 		{/if}
-		<CompilerComponent on:program={handleProgram} encodeFunction={encodeProgram} />
 	</div>
+	<ModalWindow />
 </div>
 
 <style>
@@ -103,14 +91,22 @@
 		flex-direction: row;
 		justify-content: space-between;
 		width: 100%;
+		flex-wrap: wrap;
 	}
 	.icon-button {
 		background: none;
 		border: none;
 		padding: 0;
 		cursor: pointer;
+		color: var(--primary-color);
 	}
 	:disabled:hover {
 		cursor: default;
+	}
+
+	*,
+	::before,
+	::after {
+		box-sizing: unset;
 	}
 </style>

@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import { addToast } from '$lib/Toaster.svelte';
+	import RegistersHelp from '$lib/components/help/RegistersHelp.svelte';
+	import { openModal } from '$lib/ModalWindow.svelte';
+	import { HelpCircle } from 'lucide-svelte';
+	import type { Readable } from 'svelte/store';
 
 	export let name: String;
-
-	export let memory: SharedMemory | undefined;
+	export let memory: (SharedMemory & Readable<[number]>) | undefined;
 
 	function isBinaryString(str: string) {
 		var binaryPattern = /^[01]+$/;
@@ -69,7 +72,10 @@
 </script>
 
 <div class="main">
-	{name}
+	<h3>
+		{name}
+		<button class="icon-button" on:click={() => openModal(RegistersHelp)}><HelpCircle /></button>
+	</h3>
 	<div class="flex-row" style="font-size:12px;">
 		<h4>Addr number system:</h4>
 		<label>
@@ -110,14 +116,14 @@
 	</div>
 	<div class="table">
 		<div class="row">
-			<div class="cell addr">Addr</div>
-			<div class="cell value">Value</div>
+			<div class="cell addr header header-left">Addr</div>
+			<div class="cell value header header-right">Value</div>
 		</div>
 		{#if $memory != undefined}
 			{#each $memory as data, index}
 				<div class="row" style="font-size:13px">
-          <div class="cell addr" style="display: flex; content: space-between;">
-            <div style="padding-right: 5px;">
+					<div class="cell addr" style="display: flex; content: space-between;">
+						<div style="padding-right: 5px;">
 							{#if numeral_system_address === 2}
 								{index.toString(2).padStart(7, '0')}
 							{:else if numeral_system_address === 10}
@@ -139,12 +145,22 @@
 						</div>
 					</div>
 					{#if numeral_system_value == 2}
-						<div id={index} class="cell value" contenteditable on:blur={handleCellChange}>
+						<div
+							id={index.toString()}
+							class="cell value"
+							contenteditable
+							on:blur={handleCellChange}
+						>
 							{data.toString(2).padStart(8, '0')}
 						</div>
 					{/if}
 					{#if numeral_system_value == 10}
-						<div id={index} class="cell value" contenteditable on:blur={handleCellChange}>
+						<div
+							id={index.toString()}
+							class="cell value"
+							contenteditable
+							on:blur={handleCellChange}
+						>
 							{data}
 						</div>
 					{/if}
@@ -155,45 +171,5 @@
 </div>
 
 <style>
-	.table {
-		display: flex;
-		flex-direction: column;
-		border: 1px solid #000;
-	}
-
-	.addr {
-		flex: 1;
-    min-width: 120px;
-	}
-
-	.value {
-		flex: 2;
-		flex-direction: column;
-    min-width: 80px;
-	}
-
-	.row {
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-	}
-
-	.cell {
-		flex: 1;
-		padding: 10px;
-		border: 1px solid #ccc;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.flex-row {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-around;
-	}
-
-  .main {
-    min-width: 200px;
-  }
+	@import '../memoryStyles.css' scoped;
 </style>

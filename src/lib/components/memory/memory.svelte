@@ -2,6 +2,9 @@
 	import { addToast } from '$lib/Toaster.svelte';
 	import type { Readable } from 'svelte/store';
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
+	import DataMemoryHelp from '$lib/components/help/DataMemoryHelp.svelte';
+	import { openModal } from '$lib/ModalWindow.svelte';
+	import { HelpCircle } from 'lucide-svelte';
 
 	export let name: String;
 
@@ -70,7 +73,10 @@
 </script>
 
 <div>
-	{name}
+	<h3>
+		{name}
+		<button class="icon-button" on:click={() => openModal(DataMemoryHelp)}><HelpCircle /></button>
+	</h3>
 	<div class="flex-row" style="font-size:12px;">
 		<h4>Addr number system:</h4>
 		<label>
@@ -111,8 +117,8 @@
 	</div>
 	<div class="table">
 		<div class="row">
-			<div class="cell addr">Addr</div>
-			<div class="cell value">Value</div>
+			<div class="cell addr header header-left">Addr</div>
+			<div class="cell value header header-right">Value</div>
 		</div>
 		{#if $memory != undefined}
 			{#each $memory as data, index}
@@ -126,7 +132,7 @@
 					</div>
 					{#if numeral_system_value == 2}
 						<div
-							id={index.toString()+"_2"}
+							id={index.toString() + '_2'}
 							class="cell value"
 							contenteditable
 							on:blur={handleCellChange}
@@ -136,7 +142,7 @@
 					{/if}
 					{#if numeral_system_value == 10}
 						<div
-							id={index.toString()+"_10"}
+							id={index.toString() + '_10'}
 							class="cell value"
 							contenteditable
 							on:blur={handleCellChange}
@@ -151,41 +157,5 @@
 </div>
 
 <style>
-	.table {
-		display: flex;
-		flex-direction: column;
-		border: 1px solid #000;
-	}
-
-	.addr {
-		flex: 1;
-		min-width: 80px;
-	}
-
-	.value {
-		flex: 2;
-		flex-direction: column;
-		min-width: 80px;
-	}
-
-	.row {
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-	}
-
-	.cell {
-		flex: 1;
-		padding: 10px;
-		border: 1px solid #ccc;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.flex-row {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-around;
-	}
+	@import '../memoryStyles.css' scoped;
 </style>

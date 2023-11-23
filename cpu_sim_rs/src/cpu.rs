@@ -574,6 +574,10 @@ impl SharedMemory {
     pub fn write_all(&mut self, data: Uint8Array) {
         self.0.borrow_mut().write_all(data)
     }
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn length(&mut self) -> usize {
+        self.0.borrow().len()
+    }
 }
 
 #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
@@ -591,6 +595,10 @@ impl Memory {
             subscribers: Rc::new(RefCell::new(HashMap::new())),
             next_subscriber: 0,
         }
+    }
+
+    pub fn len(&self) -> usize {
+        return self.data.len();
     }
 
     fn check_out_of_bounds(&self, addr: usize, msg: &str) {

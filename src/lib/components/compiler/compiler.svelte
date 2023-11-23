@@ -92,15 +92,18 @@
 </script>
 
 <div class="main">
-	<select on:change={handleSelectionCode}>
-		<option value="">Empty</option>
-		<option value="convolution">Convolution</option>
-		<option value="sum">Sum</option>
-	</select>
-	<div class="main_input" class:opacity={$opacityStore}>
-    <CodeMirror bind:value={program_text} tabSize={2} />
+	<div class="select">
+		<p>Select a program template:</p>
+		<select on:change={handleSelectionCode}>
+			<option value="">Empty</option>
+			<option value="convolution">Convolution</option>
+			<option value="sum">Sum</option>
+		</select>
 	</div>
-	<div>
+	<div class="main_input" class:opacity={$opacityStore}>
+		<CodeMirror bind:value={program_text} tabSize={2} />
+	</div>
+	<div class="buttons">
 		<button class="ready" on:click={() => compile()}>Compile</button>
 		<button disabled={!encodeButtonActive} class:ready={encodeButtonActive} on:click={encode}
 			>Encode</button
@@ -109,14 +112,52 @@
 </div>
 
 <style>
+  .select {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+	select {
+		background-color: var(--base-color);
+		color: var(--primary-color);
+		border: 0.2px solid var(--secondary-color);
+		border-radius: 15px;
+    margin-left: 5px;
+    text-align-last: center;
+	}
+	option {
+		margin: 5px;
+	}
+
 	.main_input {
 		font-size: 13px;
-    min-width: 100px;
-    min-height: 200px;
+		min-width: 100px;
+		min-height: 200px;
+
+		border-radius: 15px;
+		border: 1px solid var(--secondary-color);
+	}
+
+	:global(.ͼ2 .cm-gutters) {
+		color: var(--primary-color);
+		border-right: 1px solid var(--secondary-color);
+	}
+
+	:global(.ͼ2 .cm-gutters :not(.cm-activeLineGutter)) {
+		background-color: var(--base-color);
+	}
+
+	:global(.cm-activeLineGutter) {
+		background-color: var(--secondary-color) !important;
+		caret-color: transparent !important;
 	}
 
 	.opacity {
 		opacity: 0.01;
+	}
+
+	.buttons {
+		margin-top: 50px;
 	}
 
 	button {
@@ -130,18 +171,21 @@
 		font-weight: 500;
 		cursor: pointer;
 		border-radius: 30px;
+		background-color: var(--base-color);
+	}
+
+	button.ready {
+		background-color: var(--action-color);
 	}
 
 	button:hover.ready {
 		background-color: #2ee59d;
 		box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-		color: #fff;
 		transform: translateY(-1px);
 	}
 
 	button:not(.ready) {
-		background-color: red;
-		color: #fff;
+		background-color: var(--secondary-color);
 		cursor: default;
 	}
 </style>

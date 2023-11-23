@@ -1,13 +1,16 @@
 <script lang="ts">
-	import ModalCommand from './ModalCommand.svelte';
 	import { derived } from 'svelte/store';
 	import { CommandWrapper } from '$lib/pkg/cpu_sim_rs';
-  import {opacityStore} from '$lib/opacity_store'
-  import type {Readable} from 'svelte/store';
+	import { opacityStore } from '$lib/opacity_store';
+	import type { Readable } from 'svelte/store';
+	import CommandMemoryHelp from '$lib/components/help/CommandMemoryHelp.svelte';
+	import { openModal } from '$lib/ModalWindow.svelte';
+	import { HelpCircle } from 'lucide-svelte';
+	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 
 	export let name: String;
 
-  export let memory: Readable<[number]>;
+	export let memory: Readable<[number]> & SharedMemory;
 
 	let numeral_system_address = 10;
 
@@ -39,26 +42,18 @@
 		}
 	}
 
-  function changeNumeralSystemAddress(event: Event & {currentTarget : HTMLInputElement}) {
+	function changeNumeralSystemAddress(event: Event & { currentTarget: HTMLInputElement }) {
 		numeral_system_address = Number(event.currentTarget.value);
 	}
 
-	let showModal = false;
-  let modalCommandData: number; 
-
-	function openModalCommand(_: Event, value: number) {
-		modalCommandData = value;
-		showModal = true;
-    opacityStore.set(true);
-	}
-	function closeModalCommand() {
-		showModal = false;
-    opacityStore.set(false);
-	}
 </script>
 
 <div>
-	<h3>{name}</h3>
+	<h3>
+		{name}
+		<button class="icon-button" on:click={() => openModal(CommandMemoryHelp)}><HelpCircle /></button
+		>
+	</h3>
 	<div class="flex-row" style="font-size:12px;">
 		<h4>Addr number system:</h4>
 		<label>
@@ -80,8 +75,8 @@
 	</div>
 	<div class="table">
 		<div class="row">
-			<div class="cell addr">Addr</div>
-			<div class="cell value">Value</div>
+			<div class="cell addr header header-left">Addr</div>
+			<div class="cell value header header-right">Value</div>
 		</div>
 		{#if $memory != undefined}
 			{#each $groupedMemory as data, index}
@@ -93,11 +88,7 @@
 							{index * 4}
 						{/if}
 					</div>
-					<button
-						class="cell value"
-						style="cursor: pointer"
-						on:click={(event) => openModalCommand(event, data)}
-					>
+					<button class="cell value" style="cursor: pointer">
 						<div>{data.toString(2)}</div>
 						<div>{decode(data)}</div>
 					</button>
@@ -105,60 +96,32 @@
 			{/each}
 		{/if}
 	</div>
-	{#if showModal}
-		<button class="backdrop" on:click={closeModalCommand}>
-			<ModalCommand close={closeModalCommand} encodeData={modalCommandData} />
-		</button>
-	{/if}
 </div>
 
 <style>
-	.backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background-color: rgba(0, 0, 0, 0.6);
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+	@import '../memoryStyles.css' scoped;
 
 	.addr {
 		flex: 1;
-    min-width: 80px;
 	}
-
 	.value {
-		flex: 2;
-		flex-direction: column;
-    min-width: 80px;
+		flex: 4;
+	}
+	@media (min-width: 0px) {
+		.value {
+			max-width: 300px;
+		}
 	}
 
-	.table {
-		display: flex;
-		flex-direction: column;
-		border: 1px solid #000;
-		justify-content: flex-start;
+	select {
+		background-color: var(--base-color);
+		color: var(--primary-color);
+		border: 0.2px solid var(--secondary-color);
+		border-radius: 7px;
+		margin-left: 5px;
+		text-align-last: center;
 	}
-
-	.row {
-		display: flex;
-		flex-direction: row;
-		justify-content: flex-start;
-	}
-
-	.cell {
-		border: 1px solid #ccc;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-
-	.flex-row {
-		display: flex;
-		flex-direction: row;
-		justify-content: space-around;
+	option {
+		margin: 5px;
 	}
 </style>

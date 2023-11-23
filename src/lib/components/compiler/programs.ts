@@ -53,4 +53,4 @@ section .text
   loop summ
 `;
 
-export const program_variants: { [key: string]: any } = { 'convolution': convolution, 'sum': sum, '': '\n\n\n\n\n\n' };
+export const program_variants: { [key: string]: any } = { 'convolution': convolution, 'sum': sum, '': '\n\n\n\n\n\n\n\n\n' };

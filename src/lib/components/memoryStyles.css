@@ -1,0 +1,71 @@
+.addr:not(.header) {
+  border-left: 0.4px solid var(--primary-color);
+  border-bottom: 0.4px solid var(--primary-color);
+  border-right: 0.4px solid var(--primary-color);
+}
+.value:not(.header) {
+  border-right: 0.4px solid var(--primary-color);
+  border-bottom: 0.4px solid var(--primary-color);
+}
+
+.icon-button {
+  color: var(--action-color);
+}
+
+.header-left {
+  border-radius: 15px 0px 0px 0px;
+}
+.header-right {
+  border-radius: 0px 15px 0px 0px;
+}
+.header {
+  font-size: 18px;
+  color: var(--primary-color);
+  background-color: var(--secondary-color);
+  border-bottom: 0.4px solid var(--primary-color);
+}
+
+.table {
+  display: flex;
+  flex-direction: column;
+}
+
+.addr {
+  flex: 1;
+  min-width: 120px;
+}
+
+.value {
+  flex: 2;
+  flex-direction: column;
+  min-width: 80px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.cell {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.main {
+  min-width: 200px;
+  padding-bottom: 23px;
+}
+
+h3 {
+  font-weight: 800px;
+  font-size: 30px;
+}
