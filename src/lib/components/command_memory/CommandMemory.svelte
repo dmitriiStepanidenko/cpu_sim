@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { derived } from 'svelte/store';
 	import { CommandWrapper } from '$lib/pkg/cpu_sim_rs';
-	import { opacityStore } from '$lib/opacity_store';
 	import type { Readable } from 'svelte/store';
 	import CommandMemoryHelp from '$lib/components/help/CommandMemoryHelp.svelte';
 	import { openModal } from '$lib/ModalWindow.svelte';

@@ -1,28 +1,4 @@
 <script>
-	// pub enum RegisterAddress {
-	//     /// Program Counter
-	//     PC,
-	//     /// Instruction Register
-	//     IR,
-	//     /// Loop counter
-	//     CX,
-	//     /// JMP register. If jamp was = 1, if not = 0
-	//     JMP,
-	//     /// General-purpose registers, where u8 is the register number (e.g., 0 for R0, 1 for R1, etc.)
-	//     GP(u8),
-	// }
-	//    /// Number
-	//    /// Address
-	//    /// MOV R0, \[123\] - mov from addr 123 to R0
-	//    Direct(u8),
-	//    /// Address in register
-	//    /// MOV R0, \[R1\] - mov from addr R1 to R0
-	//    Indirect(RegisterAddress),
-	//    /// Register
-	//    /// MOV R0, R1 - obvious
-	//    Register(RegisterAddress),
-	//    /// MOV R0, [R1+R2]
-	//    RegisterIndirect(RegisterAddress, RegisterAddress),
 </script>
 
 <div class="main">
@@ -125,7 +101,7 @@
 	<div class="table">
 		<div class="row">
 			<div class="cell header addressing_mode_type">Addressing mode type</div>
-			<div class="cell header addressing_mode_code">Addressing mode code (3 bits)</div>
+			<div class="cell header addressing_mode_code">Addressing mode code (2 bits)</div>
 			<div class="cell header addressing_mode_prototype">Addressing mode protype</div>
 			<div class="cell header addressing_mode_desc">Addressing mode description</div>
 		</div>

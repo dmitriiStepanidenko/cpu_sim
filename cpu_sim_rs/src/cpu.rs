@@ -266,11 +266,11 @@ pub enum AddressingMode {
 
 impl AddressingMode {
     pub fn from(value: u32) -> Result<(Self, u32), CpuErrors> {
-        let bits_value = (value as u8) & 0b_0000_0111;
-        let position = 3;
+        let bits_value = (value as u8) & 0b_0000_0011;
+        let position = 2;
         match bits_value {
-            0 => return Ok((Self::Immediate((value >> 3) as u8), value >> (3 + 8))),
-            1 => return Ok((Self::Direct((value >> 3) as u8), value >> (3 + 8))),
+            0 => return Ok((Self::Immediate((value >> position) as u8), value >> (position + 8))),
+            1 => return Ok((Self::Direct((value >> position) as u8), value >> (position + 8))),
             2 => {
                 let (register, value) = RegisterAddress::from(value >> position);
                 return Ok((Self::Indirect(register), value));
@@ -316,7 +316,7 @@ impl AddressingMode {
     pub fn encode(&self, mut value: u32, position: u32) -> (u32, u32) {
         let mut reg_value: u32;
 
-        let mut length = 3; // adressing code length
+        let mut length = 2; // adressing code length
         match self {
             Self::Immediate(addr) => {
                 reg_value = 0;
