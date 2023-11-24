@@ -16,7 +16,7 @@ type Data = HashMap<String, Vec<u8>>;
 type Loop = HashMap<String, u8>;
 
 #[derive(Debug, PartialEq, Eq, Default, Clone)]
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct Program {
     data: Data,
     text: Vec<Command>,
@@ -53,14 +53,22 @@ impl Program {
     }
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+impl Program {
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+    pub fn text_len(&self) -> usize {
+        self.text.len()
+    }
+}
+
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub struct ParserErrror {
     data: ParserErrorsTypes,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 impl ParserErrror {
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn is_known_error(&self) -> bool {
         match self.data {
             ParserErrorsTypes::UnknownError => return false,
@@ -68,7 +76,7 @@ impl ParserErrror {
         }
     }
 
-    #[wasm_bindgen]
+    #[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
     pub fn get_error_position(&self) -> String {
         match &self.data {
             ParserErrorsTypes::UnknownError => return "".to_string(),
@@ -159,7 +167,6 @@ fn parse_define_byte(input: &str) -> IResult<&str, (&str, Vec<u8>)> {
     let (input, _) = tag("db")(input)?;
 
     let (input, result) = alt((dup, parse_comma_number))(input)?;
-
 
     Ok((input, (label, result)))
 }

@@ -9,6 +9,7 @@
 	import init, { Cpu, MemoryType } from '$lib/pkg/cpu_sim_rs';
 	import { Pause, Play, StepForward } from 'lucide-svelte';
 	import ModalWindow from '$lib/ModalWindow.svelte';
+	import { create_success, create_error } from '$lib/Toaster.svelte';
 
 	let cpu: Cpu;
 	let registersMemory: SharedMemory;
@@ -16,11 +17,15 @@
 	let cmdMemory: SharedMemory;
 	let program: Program;
 
+	let cmd_size = 80;
+	let data_size = 16;
+	let reg_size = 16;
+
 	onMount(async () => {
 		if (cpu === undefined) {
 			init().then(() => {
 				//set_trace();
-				cpu = new Cpu(80, 16, 16);
+				cpu = new Cpu(cmd_size, data_size, reg_size);
 				registersMemory = cpu.get_memory(MemoryType.Registers);
 				dataMemory = cpu.get_memory(MemoryType.Data);
 				cmdMemory = cpu.get_memory(MemoryType.Command);
@@ -45,7 +50,12 @@
 	}
 
 	function encodeProgram(program: Program) {
+		if (program.text_len() * 4 > cmd_size) {
+			create_error('Encode error', 'Not enough command memory size');
+      return;
+		}
 		cpu?.encode(program);
+    create_success('Encode successfull','');
 	}
 
 	function handleProgram(event: CustomEvent<Program>) {

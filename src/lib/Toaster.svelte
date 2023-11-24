@@ -13,6 +13,25 @@
   } = createToaster<ToastData>()
  
   export const addToast = helpers.addToast
+
+	export function create_success(title: string, description: string) {
+		addToast({
+			data: {
+				title,
+				description,
+				color: 'green'
+			}
+		});
+	}
+	export function create_error(title: string, description: string) {
+		addToast({
+			data: {
+				title,
+				description,
+				color: 'red'
+			}
+		});
+	}
 </script>
  
 <script lang="ts">
