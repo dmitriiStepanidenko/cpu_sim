@@ -6,7 +6,7 @@
 	import { onMount } from 'svelte';
 	import type { SharedMemory } from '$lib/pkg/cpu_sim_rs';
 	import { Program } from '$lib/pkg/cpu_sim_rs';
-	import init, { Cpu, MemoryType } from '$lib/pkg/cpu_sim_rs';
+	import init, { Cpu, MemoryType, set_trace } from '$lib/pkg/cpu_sim_rs';
 	import { Pause, Play, StepForward } from 'lucide-svelte';
 	import ModalWindow from '$lib/ModalWindow.svelte';
 	import { create_success, create_error } from '$lib/Toaster.svelte';

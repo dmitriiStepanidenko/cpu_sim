@@ -30,7 +30,8 @@ section .text
     inc R2
   loop sum
 
-  store 15, R4
+  mov R5, 15
+  store [R5], R4
 
   jmp 0
 `;
