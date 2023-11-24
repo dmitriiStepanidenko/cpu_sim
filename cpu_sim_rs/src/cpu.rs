@@ -425,6 +425,11 @@ impl Command {
                 let reg_val: u32 = (*addr as u32) << position;
                 result |= reg_val;
             }
+            Self::Jmp(addr) => {
+                result = Self::JMP as u32;
+                let (reg_val, _) = addr.encode(result, position);
+                result |= reg_val;
+            }
             _ => unimplemented!(),
         };
 

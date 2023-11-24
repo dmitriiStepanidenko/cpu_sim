@@ -98,7 +98,7 @@
 		border: none;
 		padding: 0;
 		cursor: pointer;
-		color: var(--primary-color);
+		color: var(--action-color);
 	}
 	:disabled:hover {
 		cursor: default;

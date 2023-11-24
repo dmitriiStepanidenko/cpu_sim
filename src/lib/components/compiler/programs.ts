@@ -29,6 +29,8 @@ section .text
 
     inc R2
   loop sum
+
+  jmp 0
 `;
 
 const sum = `section .data
@@ -51,6 +53,8 @@ section .text
     inc R1 
     inc R2 
   loop summ
+
+  jmp 0
 `;
 
 export const program_variants: { [key: string]: any } = { 'convolution': convolution, 'sum': sum, '': '\n\n\n\n\n\n\n\n\n' };

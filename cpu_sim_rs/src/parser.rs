@@ -201,6 +201,7 @@ fn parse_text_section<'a>(
             |input| parse_inc(input, program.clone()),
             |input| parse_mul(input, program.clone()),
             |input| parse_add(input, program.clone()),
+            |input| parse_jmp(input, program.clone()),
         ))(current_input);
 
         match parse_result {
@@ -245,7 +246,7 @@ fn parse_addressing_mode_immediate<'a>(
     input: &'a str,
     _: Rc<RefCell<Program>>,
 ) -> IResult<&'a str, AddressingMode> {
-    let (input, number) = number(input)?;
+    let (input, number) = preceded(multispace0, number)(input)?;
     return Ok((input, AddressingMode::Immediate(number)));
 }
 
@@ -270,6 +271,7 @@ fn parse_addressing_mode_direct<'a>(
     input: &'a str,
     program: Rc<RefCell<Program>>,
 ) -> IResult<&'a str, AddressingMode> {
+    let (input, _) = multispace0(input)?;
     let (input, label) = terminated(preceded(tag("["), identifier), tag("]"))(input)?;
     let number = program.borrow().get_direct_address(label).unwrap();
     return Ok((input, AddressingMode::Direct(number)));
@@ -351,6 +353,13 @@ fn parse_add<'a>(input: &'a str, program: Rc<RefCell<Program>>) -> IResult<&'a s
     let (input, src2) = parse_addressing_mode(input, program.clone())?;
 
     return Ok((input, Command::Add(dst, src1, src2)));
+}
+
+fn parse_jmp<'a>(input: &'a str, program: Rc<RefCell<Program>>) -> IResult<&'a str, Command> {
+    let (input, _) = preceded(multispace0, tag("jmp"))(input)?;
+    let (input, src) = parse_addressing_mode(input, program.clone())?;
+
+    return Ok((input, Command::Jmp(src)));
 }
 
 fn parse_data_section(input: &str) -> IResult<&str, Vec<(String, Vec<u8>)>> {
