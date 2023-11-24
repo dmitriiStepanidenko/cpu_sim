@@ -778,23 +778,23 @@ mod tests {
         let addressing_mode = AddressingMode::Immediate(101u8);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 0);
-        assert_eq!(0b1100101000, result);
+        assert_eq!(0b1100101_00, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b110010100000 as u32, result);
+        assert_eq!(0b1100101_00_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b110010100010 as u32, result);
+        assert_eq!(0b1100101_00_10 as u32, result);
     }
 
     #[test]
     fn decode_addressing_mode_immediate() {
-        let (addressing_mode, value) = AddressingMode::from(0b1100101000).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b1100101_00).unwrap();
         let expected_addressing_mode = AddressingMode::Immediate(101u8);
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 0);
 
-        let (addressing_mode, value) = AddressingMode::from(0b10_01100101000).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b10_01100101_00).unwrap();
         let expected_addressing_mode = AddressingMode::Immediate(101u8);
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 2);
@@ -805,23 +805,23 @@ mod tests {
         let addressing_mode = AddressingMode::Direct(101u8);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 0);
-        assert_eq!(0b1100101_001, result);
+        assert_eq!(0b1100101_01, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b1100101_001_00 as u32, result);
+        assert_eq!(0b1100101_01_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b1100101_001_10 as u32, result);
+        assert_eq!(0b1100101_01_10 as u32, result);
     }
 
     #[test]
     fn decode_addressing_mode_direct() {
-        let (addressing_mode, value) = AddressingMode::from(0b1100101001).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b1100101_01).unwrap();
         let expected_addressing_mode = AddressingMode::Direct(101u8);
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 0);
 
-        let (addressing_mode, value) = AddressingMode::from(0b10_01100101001).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b10_01100101_01).unwrap();
         let expected_addressing_mode = AddressingMode::Direct(101u8);
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 2);
@@ -832,23 +832,23 @@ mod tests {
         let addressing_mode = AddressingMode::Indirect(RegisterAddress::GP(101u8));
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 0);
-        assert_eq!(0b1101001_010, result);
+        assert_eq!(0b1101001_10, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b1101001_010_00 as u32, result);
+        assert_eq!(0b1101001_10_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b1101001_010_10 as u32, result);
+        assert_eq!(0b1101001_10_10 as u32, result);
     }
 
     #[test]
     fn decode_addressing_mode_indirect() {
-        let (addressing_mode, value) = AddressingMode::from(0b1101001_010).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b1101001_10).unwrap();
         let expected_addressing_mode = AddressingMode::Indirect(RegisterAddress::GP(101u8));
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 0);
 
-        let (addressing_mode, value) = AddressingMode::from(0b10_01101001_010).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b10_01101001_10).unwrap();
         let expected_addressing_mode = AddressingMode::Indirect(RegisterAddress::GP(101u8));
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 2);
@@ -859,23 +859,23 @@ mod tests {
         let addressing_mode = AddressingMode::Register(RegisterAddress::GP(101u8));
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 0);
-        assert_eq!(0b1101001_011, result);
+        assert_eq!(0b1101001_11, result);
         let value: u32 = 0;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b1101001_011_00 as u32, result);
+        assert_eq!(0b1101001_11_00 as u32, result);
         let value: u32 = 2;
         let (result, _) = addressing_mode.encode(value, 2);
-        assert_eq!(0b1101001_011_10 as u32, result);
+        assert_eq!(0b1101001_11_10 as u32, result);
     }
 
     #[test]
     fn decode_addressing_mode_register() {
-        let (addressing_mode, value) = AddressingMode::from(0b1101001011).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b1101001_11).unwrap();
         let expected_addressing_mode = AddressingMode::Register(RegisterAddress::GP(101u8));
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 0);
 
-        let (addressing_mode, value) = AddressingMode::from(0b10_01101001011).unwrap();
+        let (addressing_mode, value) = AddressingMode::from(0b10_01101001_11).unwrap();
         let expected_addressing_mode = AddressingMode::Register(RegisterAddress::GP(101u8));
         assert_eq!(addressing_mode, expected_addressing_mode);
         assert_eq!(value, 2);
@@ -885,29 +885,29 @@ mod tests {
     fn encode_command_store() {
         let command = Command::Store(
             AddressingMode::Register(RegisterAddress::GP(101u8)),
-            RegisterAddress::GP(101u8),
+            RegisterAddress::GP(102u8),
         );
         let result = command.encode();
-        assert_eq!(0b1101001_01101001_011_0001, result);
+        assert_eq!(0b1101010_01101001_11_0001, result);
 
         let cmd = Command::Store(
             AddressingMode::Indirect(RegisterAddress::IR),
             RegisterAddress::PC,
         );
         let result = cmd.encode();
-        assert_eq!(0b0_00000001_010_0001, result);
+        assert_eq!(0b0_00000001_10_0001, result);
     }
 
     #[test]
     fn decode_command_store() {
-        let command = Command::decode(0b1101001_01101001_011_0001).unwrap();
+        let command = Command::decode(0b1101001_01101001_11_0001).unwrap();
         let expected_command = Command::Store(
             AddressingMode::Register(RegisterAddress::GP(101u8)),
             RegisterAddress::GP(101u8),
         );
         assert_eq!(command, expected_command);
 
-        let command = Command::decode(0b1_00000001_011_0001).unwrap();
+        let command = Command::decode(0b1_00000001_11_0001).unwrap();
         let expected_command = Command::Store(
             AddressingMode::Register(RegisterAddress::IR),
             RegisterAddress::IR,

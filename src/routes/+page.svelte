@@ -17,7 +17,7 @@
 	let cmdMemory: SharedMemory;
 	let program: Program;
 
-	let cmd_size = 80;
+	let cmd_size = 128;
 	let data_size = 16;
 	let reg_size = 16;
 

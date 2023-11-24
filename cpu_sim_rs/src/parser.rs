@@ -10,6 +10,8 @@ use nom::{
     IResult,
 };
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
+
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
 type Data = HashMap<String, Vec<u8>>;
@@ -90,7 +92,7 @@ pub enum ParserErrorsTypes {
     UnknownError,
 }
 
-#[wasm_bindgen]
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
 pub fn compile_program(text: String) -> Result<Program, ParserErrror> {
     let program = Program::default();
     match parse_program(&text, program) {
@@ -463,7 +465,7 @@ mod tests {
                 mov R10, result 
                 add R10, sum, R10
                 inc [result]
-            loop summ
+            loop sum
             "#;
 
         let program = Program::default();
